@@ -30,7 +30,7 @@ import { Message } from '../../shared/interfaces/message';
     `
       ul {
         height: 100%;
-        overflow: scroll;
+        overflow: auto;
         list-style-type: none;
         padding: 1rem;
         padding-bottom: 5rem;
@@ -39,7 +39,7 @@ import { Message } from '../../shared/interfaces/message';
 
       li {
         display: flex;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
       }
 
       .avatar {
