@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
     <input
       type="text"
       [formControl]="messageControl"
+      name="messageControl"
       placeholder="type a message..."
       (keyup.enter)="send.emit(messageControl.value); messageControl.reset()"
     />
