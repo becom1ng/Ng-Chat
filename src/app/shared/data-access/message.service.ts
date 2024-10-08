@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { merge, Observable } from 'rxjs';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { map } from 'rxjs/operators';
+import { defer, merge, Observable, of, Subject } from 'rxjs';
+import { collection, query, orderBy, limit, addDoc } from 'firebase/firestore';
+import { catchError, exhaustMap, ignoreElements, map } from 'rxjs/operators';
 import { connect } from 'ngxtension/connect';
 import { collectionData } from 'rxfire/firestore';
 
@@ -31,11 +31,20 @@ export class MessageService {
 
   // sources
   messages$ = this.getMessages();
+  add$ = new Subject<Message['content']>();
 
   constructor() {
     // reducers
     const nextState$ = merge(
-      this.messages$.pipe(map((messages) => ({ messages })))
+      this.messages$.pipe(map((messages) => ({ messages }))),
+      this.add$.pipe(
+        // add message to database
+        exhaustMap((message) => this.addMessage(message)),
+        // ignore stream emissions from above as we don't care
+        ignoreElements(),
+        // catch errors (prevent sream breaking) and emit as observable, which will then update state
+        catchError((error) => of({ error }))
+      )
     );
 
     connect(this.state).with(nextState$);
@@ -51,5 +60,17 @@ export class MessageService {
     return collectionData(messageCollection, { idField: 'id' }).pipe(
       map((messages) => [...messages].reverse())
     ) as Observable<Message[]>;
+  }
+
+  private addMessage(message: string) {
+    const newMessage: Message = {
+      // TODO: Use actual user data once register/login implemented
+      author: 'me@test.com',
+      content: message,
+      created: Date.now().toString(),
+    };
+
+    const messageCollection = collection(this.firestore, 'messages');
+    return defer(() => addDoc(messageCollection, newMessage));
   }
 }
