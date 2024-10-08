@@ -1,10 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MessageService } from '../shared/data-access/message.service';
+import { MessageListComponent } from './ui/message-list.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
-  template: ` <p>Hello world</p> `,
+  imports: [MessageListComponent],
+  template: `
+    <div class="container">
+      <app-message-list [messages]="messageService.messages()" />
+    </div>
+  `,
   styles: ``,
 })
-export default class HomeComponent {}
+export default class HomeComponent {
+  messageService = inject(MessageService);
+}
