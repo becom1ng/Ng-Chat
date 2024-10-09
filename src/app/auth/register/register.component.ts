@@ -17,6 +17,6 @@ import { RegisterFormComponent } from './ui/register-form.component';
   styles: ``,
   providers: [RegisterService],
 })
-export class RegisterComponent {
+export default class RegisterComponent {
   public registerService = inject(RegisterService);
 }
