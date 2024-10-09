@@ -7,6 +7,7 @@ import { collectionData } from 'rxfire/firestore';
 
 import { Message } from '../interfaces/message';
 import { FIRESTORE } from '../../app.config';
+import { AuthService } from './auth.service';
 
 interface MessageState {
   messages: Message[];
@@ -18,6 +19,7 @@ interface MessageState {
 })
 export class MessageService {
   private firestore = inject(FIRESTORE);
+  private authService = inject(AuthService);
 
   // state
   private state = signal<MessageState>({
@@ -63,14 +65,13 @@ export class MessageService {
   }
 
   private addMessage(message: string) {
-    const newMessage: Message = {
-      // TODO: Use actual user data once register/login implemented
-      author: 'me@test.com',
+    const newMessage = {
+      author: this.authService.user()?.email,
       content: message,
       created: Date.now().toString(),
     };
 
-    const messageCollection = collection(this.firestore, 'messages');
-    return defer(() => addDoc(messageCollection, newMessage));
+    const messagesCollection = collection(this.firestore, 'messages');
+    return defer(() => addDoc(messagesCollection, newMessage));
   }
 }
