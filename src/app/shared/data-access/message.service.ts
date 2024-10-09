@@ -1,9 +1,18 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { defer, merge, Observable, of, Subject } from 'rxjs';
 import { collection, query, orderBy, limit, addDoc } from 'firebase/firestore';
-import { catchError, exhaustMap, ignoreElements, map } from 'rxjs/operators';
+import {
+  catchError,
+  delay,
+  exhaustMap,
+  filter,
+  ignoreElements,
+  map,
+  retry,
+} from 'rxjs/operators';
 import { connect } from 'ngxtension/connect';
 import { collectionData } from 'rxfire/firestore';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 import { Message } from '../interfaces/message';
 import { FIRESTORE } from '../../app.config';
@@ -20,6 +29,7 @@ interface MessageState {
 export class MessageService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
+  private authUser$ = toObservable(this.authService.user);
 
   // state
   private state = signal<MessageState>({
@@ -32,7 +42,12 @@ export class MessageService {
   error = computed(() => this.state().error);
 
   // sources
-  messages$ = this.getMessages();
+  messages$ = this.getMessages().pipe(
+    // restart stream when user reauthenticates
+    retry({
+      delay: () => this.authUser$.pipe(filter((user) => !!user)),
+    })
+  );
   add$ = new Subject<Message['content']>();
 
   constructor() {
