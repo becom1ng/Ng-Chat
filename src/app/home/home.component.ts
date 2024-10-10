@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { MessageService } from '../shared/data-access/message.service';
 import { MessageListComponent } from './ui/message-list.component';
 import { MessageInputComponent } from './ui/message.input.component';
@@ -21,9 +21,16 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   template: `
     <div class="container">
       <mat-toolbar color="primary">
-        <span class="spacer"></span>
         <button mat-icon-button (click)="authService.logout()">
           <mat-icon>logout</mat-icon>
+        </button>
+        <span class="spacer"></span>
+        <button mat-icon-button (click)="darkMode.set(!darkMode())">
+          @if(darkMode()) {
+          <mat-icon>light_mode</mat-icon>
+          } @else {
+          <mat-icon>dark_mode</mat-icon>
+          }
         </button>
       </mat-toolbar>
 
@@ -44,7 +51,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       }
 
       mat-toolbar {
-        box-shadow: 0px -7px 11px 0px var(--accent-color);
+        box-shadow: 0px -7px 11px 0px var(--md-sys-color-primary-container);
+        position: sticky;
+        top: 0;
       }
 
       app-message-list {
@@ -64,11 +73,17 @@ export default class HomeComponent {
   public authService = inject(AuthService);
   private router = inject(Router);
 
+  darkMode = signal(false);
+
   constructor() {
     effect(() => {
       if (!this.authService.user()) {
         this.router.navigate(['auth', 'login']);
       }
+    });
+
+    effect(() => {
+      document.documentElement.classList.toggle('dark', this.darkMode());
     });
   }
 }

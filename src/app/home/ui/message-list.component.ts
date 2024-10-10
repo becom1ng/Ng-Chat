@@ -52,15 +52,18 @@ import { CdkScrollable, ScrollingModule } from '@angular/cdk/scrolling';
         width: 75px;
         margin: 0 1rem;
         height: auto;
-        filter: drop-shadow(2px 3px 5px var(--accent-darker-color));
+        filter: drop-shadow(
+          2px 3px 5px var(--md-sys-color-secondary-container)
+        );
       }
 
       .message {
         width: 100%;
-        background: var(--white);
+        color: var(--md-sys-color-on-background);
+        background: var(--md-sys-color-surface-container-low);
         padding: 2rem;
         border-radius: 5px;
-        filter: drop-shadow(2px 4px 3px var(--primary-darker-color));
+        filter: drop-shadow(2px 4px 3px var(--md-sys-color-secondary));
       }
     `,
   ],

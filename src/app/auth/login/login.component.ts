@@ -26,7 +26,7 @@ import { LoginService } from './data-access/login.service';
     `
       a {
         margin: 2rem;
-        color: var(--accent-darker-color);
+        color: var(--md-sys-color-secondary-container);
       }
     `,
   ],

@@ -31,7 +31,8 @@ import { MatIconModule } from '@angular/material/icon';
 
       input {
         width: 100%;
-        background: var(--white);
+        color: var(--md-sys-color-on-background);
+        background: var(--md-sys-color-surface-container-low);
         border: none;
         font-size: 1.2em;
         padding: 2rem 1rem;
