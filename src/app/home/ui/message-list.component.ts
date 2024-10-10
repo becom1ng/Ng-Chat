@@ -1,13 +1,14 @@
-import { Component, input } from '@angular/core';
+import { Component, effect, input, viewChild } from '@angular/core';
 import { Message } from '../../shared/interfaces/message';
 import { AuthUser } from '../../shared/data-access/auth.service';
+import { CdkScrollable, ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [],
+  imports: [ScrollingModule],
   template: `
-    <ul class="gradient-bg">
+    <ul cdkScrollable class="gradient-bg">
       @for (message of messages(); track message.created){
       <li
         [style.flex-direction]="
@@ -67,4 +68,17 @@ import { AuthUser } from '../../shared/data-access/auth.service';
 export class MessageListComponent {
   messages = input.required<Message[]>();
   activeUser = input.required<AuthUser>();
+
+  scrollContainer = viewChild.required(CdkScrollable);
+
+  constructor() {
+    effect(() => {
+      if (this.messages().length && this.scrollContainer()) {
+        this.scrollContainer().scrollTo({
+          bottom: 0,
+          behavior: 'smooth',
+        });
+      }
+    });
+  }
 }
